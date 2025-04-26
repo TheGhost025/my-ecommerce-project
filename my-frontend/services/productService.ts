@@ -34,3 +34,10 @@ export const createProduct = async (product: Productt): Promise<Product> => {
         throw error;
     }
 }
+
+export const searchProducts = async (query: string): Promise<Product[]> => {
+    const response = await axios.get(`${API_URL}/search`, {
+      params: { query },
+    });
+    return response.data;
+  };

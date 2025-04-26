@@ -40,3 +40,25 @@ exports.getProductById = async (req, res, next) => {
     res.status(500).json({ message: 'Error fetching product', error });
   }
 }
+
+exports.searchProducts = async (req, res, next) => { 
+  try {
+    const { query } = req.query;
+    
+    if (!query) {
+      return res.status(400).json({ message: "Query is required" });
+    }
+
+    const products = await Product.find({
+      $or: [
+        { name: { $regex: query, $options: 'i' } },
+        { category: { $regex: query, $options: 'i' } },
+      ],
+    });
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error in searchProducts:", error);
+    res.status(500).json({ message: 'Error searching products', error });
+  }
+};

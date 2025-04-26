@@ -29,8 +29,8 @@ const ProductListScreen = () => {
 
     if (loading) {
         return (
-            <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#0000ff" />
+            <SafeAreaView style={styles.centered}>
+                <ActivityIndicator size="large" color="#0066cc" />
             </SafeAreaView>
         );
     }
@@ -39,13 +39,22 @@ const ProductListScreen = () => {
         <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Products</Text>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => router.push("/product/add")}
-          >
-            <AntDesign name="pluscircleo" size={24} color="#0066cc" />
-            <Text style={styles.addText}>Add</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => router.push("/product/search")}
+            >
+              <AntDesign name="search1" size={24} color="#0066cc" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.addButton, { marginLeft: 10 }]}
+              onPress={() => router.push("/product/add")}
+            >
+              <AntDesign name="pluscircleo" size={24} color="#0066cc" />
+              <Text style={styles.addText}>Add</Text>
+            </TouchableOpacity>
+          </View>
         </View>
   
         <FlatList
@@ -94,6 +103,9 @@ const styles = StyleSheet.create({
       flexDirection: "row",
       alignItems: "center",
       gap: 6,
+    },
+    iconButton: {
+      padding: 6,
     },
     addText: {
       fontSize: 16,

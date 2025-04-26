@@ -25,7 +25,7 @@ export default function ProductDetails() {
     }, [id]);
 
     if (loading) {
-        return <ActivityIndicator size="large" color="#0000ff" />;
+        return <ActivityIndicator size="large" color="#007AFF" style={{ flex: 1, justifyContent: 'center' }} />;
     }
 
     if (!product) {
