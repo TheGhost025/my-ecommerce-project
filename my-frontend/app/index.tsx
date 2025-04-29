@@ -9,7 +9,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to the Home Page!</Text>
-      <Button title="Go to Products" onPress={() => router.push('/(tabs)/products')} />
+      <Button title="Go to Products" onPress={() => router.push('./auth/login')} />
     </View>
   );
 }

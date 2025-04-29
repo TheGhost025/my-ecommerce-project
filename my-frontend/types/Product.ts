@@ -5,4 +5,5 @@ export interface Productt {
     image: string;
     category: string;
     stock: number;
+    supplier: string
 }
