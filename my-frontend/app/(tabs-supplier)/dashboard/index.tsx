@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { getProductsBySupplier } from '@/services/productService';
 import { Product } from '@/types/Products';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {router} from 'expo-router';
 
 export default function Dashboard() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -11,7 +12,7 @@ export default function Dashboard() {
     const fetchProducts = async () => {
       const supplierId = await AsyncStorage.getItem('userId');
       if (supplierId) {
-        const data = await getProductsBySupplier(supplierId);
+        const data = await getProductsBySupplier(JSON.parse(supplierId));
         setProducts(data);
       }
     };
@@ -29,7 +30,7 @@ export default function Dashboard() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Supplier Dashboard</Text>
-      <Button title="Add New Product" onPress={() => { /* navigate to add product page */ }} />
+      <Button title="Add New Product" onPress={() => { router.push("../(tabs-supplier)/add-product") }} />
       <FlatList
         data={products}
         renderItem={renderItem}

@@ -2,6 +2,7 @@ import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react
 import {useState, useEffect} from 'react';
 import { getProducts } from '@/services/productService';
 import { Product } from '@/types/Products';
+import { router } from 'expo-router';
 
 export default function Home() {
     const [products, setProducts] = useState<Product[]>([]);
@@ -28,7 +29,7 @@ export default function Home() {
     }, []);
 
     const renderItem = ({ item }: { item: Product }) => (
-        <TouchableOpacity style={styles.productCard}>
+        <TouchableOpacity style={styles.productCard} onPress={() => router.push(`../(tabs-customer)/product-details/${item._id}`)}>
 
             <Image source={{ uri: item.image }} style={styles.productImage}/>
             <Text style={styles.productName}>{item.name}</Text>

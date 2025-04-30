@@ -2,7 +2,7 @@ const Product = require('../models/productModel');
 
 exports.createProduct = async (req, res, next) => {
   try {
-    const { name, description, price, image, category, stock } = req.body;
+    const { name, description, price, image, category, stock, supplier } = req.body;
 
     const newProduct = new Product({
       name,
@@ -11,6 +11,7 @@ exports.createProduct = async (req, res, next) => {
       image,
       category,
       stock,
+      supplier,
     });
 
     await newProduct.save();
@@ -22,7 +23,7 @@ exports.createProduct = async (req, res, next) => {
 
 exports.getProducts = async (req, res, next) => {
   try {
-    const products = await Product.find({ });
+    const products = await Product.find({ }).populate('supplier', 'name');
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching products', error });
@@ -31,7 +32,7 @@ exports.getProducts = async (req, res, next) => {
 
 exports.getSupplierProducts = async (req, res, next) => {
   try {
-    const products = await Product.find({ supplier: req.params.supplierId });
+    const products = await Product.find({ supplier: req.params.supplierId }).populate('supplier', 'name');
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching products', error });
@@ -40,7 +41,7 @@ exports.getSupplierProducts = async (req, res, next) => {
 
 exports.getProductById = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate('supplier', 'name');
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }

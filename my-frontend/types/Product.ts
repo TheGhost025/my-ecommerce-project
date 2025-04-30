@@ -5,5 +5,9 @@ export interface Productt {
     image: string;
     category: string;
     stock: number;
-    supplier: string
+    supplier : {
+        _id: string;
+        firstName: string;
+        lastName: string;
+      };
 }
