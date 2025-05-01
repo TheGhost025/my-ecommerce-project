@@ -4,6 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const productRoutes = require('./routes/productRoutes');
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
 const logger = require('./middleware/logger');
 
 dotenv.config();
@@ -24,6 +25,7 @@ mongoose.connect(process.env.MONGO_URI, {
 app.use(logger);
 
 app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
 app.use('/api', productRoutes);
 
 app.listen(PORT, () => {

@@ -20,7 +20,7 @@ export default function Dashboard() {
   }, []);
 
   const renderItem = ({ item }: { item: Product }) => (
-    <TouchableOpacity style={styles.productCard}>
+    <TouchableOpacity style={styles.productCard} onPress={() => router.push(`../(tabs-supplier)/product-details/${item._id}`)}>
       <Text style={styles.productName}>{item.name}</Text>
       <Text style={styles.productStock}>Stock: {item.stock}</Text>
       <Text style={styles.productPrice}>Price: ${item.price}</Text>
