@@ -1,8 +1,10 @@
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, Button, StyleSheet } from "react-native";
 import { useState, useEffect } from "react";
 import { useLocalSearchParams } from 'expo-router';
 import { getProductById } from "@/services/productService";
+import { addToCart } from "@/services/cartService";
 import { Product } from "@/types/Products";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ProductDetails() {
     const { id } = useLocalSearchParams();
@@ -28,6 +30,17 @@ useEffect(() => {
         meta: { fontSize: 14, color: '#666', marginTop: 5 },
     });
 
+    const handleAddToCart = async () => {
+        const userId = await AsyncStorage.getItem('userId');
+        const userIdParse = JSON.parse(userId as string);
+        try {
+          if (!userIdParse || !product) return;
+          await addToCart(userIdParse, product._id, 1);
+        } catch (error) {
+          console.error("Add to cart failed", error);
+        }
+      };
+
     if(!product) {
         return <Text>Loading...</Text>;
     }
@@ -41,6 +54,8 @@ useEffect(() => {
             <Text style={styles.meta}>Category: {product.category}</Text>
             <Text style={styles.meta}>Stock: {product.stock}</Text>
             <Text style={styles.meta}>Supplier ID: {product.supplier.name}</Text>
+
+            <Button title="Add to Cart" onPress={handleAddToCart} />
         </View>
     );
 }
