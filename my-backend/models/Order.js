@@ -17,7 +17,12 @@ const OrderSchema = new mongoose.Schema({
                 required: true
             }
         }
-    ],createdAt: {
+    ],
+    total: {
+        type: Number,
+        required: true
+    },
+    createdAt: {
         type: Date,
         default: Date.now
     }

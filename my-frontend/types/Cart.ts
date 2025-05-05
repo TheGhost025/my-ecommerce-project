@@ -9,7 +9,7 @@ export type CartItem = {
       stock: number;
       supplier: string
     };
-    quantity: number;
+    quamtity: number;
   };
   
   export type CartData = {

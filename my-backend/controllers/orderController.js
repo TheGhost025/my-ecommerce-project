@@ -1,5 +1,6 @@
-const Order = require('../models/orderModel');
+const Order = require('../models/Order');
 const Product = require('../models/productModel');
+const Cart = require('../models/cartModel');
 
 exports.createOrder = async (req, res, next) => {
     try {
@@ -24,15 +25,15 @@ exports.createOrder = async (req, res, next) => {
             return res.status(400).json({ message: `Not enough stock for ${product.name}` });
           }
     
-          total += product.price * item.quantity;
+          total += product.price * item.quamtity;
     
           updatedProducts.push({
             product: product._id,
-            quantity: item.quantity,
+            quantity: item.quamtity,
             supplier: product.supplier
           });
     
-          product.stock -= item.quantity;
+          product.stock -= item.quamtity;
           await product.save();
         }
     
@@ -65,28 +66,28 @@ exports.getOrderBySupplier = async (req, res, next) => {
     })
             .populate('customer', 'name');
 
-            const filteredOrders = orders.products.map(order => {
-                const filteredProducts = order.products.filter(p => p.product  != null);
-
-                if(filteredProducts.length > 0) {
+            const filteredOrders = orders
+            .map(order => {
+                const filteredProducts = order.products.filter(p => p.product != null);
+                if (filteredProducts.length > 0) {
                     return {
                         ...order.toObject(),
-                        products: filteredProducts,
+                        products: filteredProducts
                     };
                 }
-
                 return null;
-            }).filter(order => order != null);
+            })
+            .filter(order => order !== null);
 
             res.json(filteredOrders);
     }
-    catch (error) {
+    catch (err) {
         res.status(500).json({ message: "Error fetching supplier orders", error: err });
     }
 }
 
 exports.getOrderByCustomer = async (req, res, next) => {
-    const { customerId } = req.params.id;
+    const { customerId } = req.params;
 
     try {
         const orders = await Order.find({ customer: customerId })

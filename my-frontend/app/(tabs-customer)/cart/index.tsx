@@ -3,6 +3,7 @@ import {Text, View, Button, FlatList, Image} from 'react-native';
 import {getCart, removeFromCart} from '@/services/cartService';
 import {CartData} from '@/types/Cart';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
 
 export default function Cart() {
     const [cart, setCart] = useState<CartData | null>(null);
@@ -28,17 +29,21 @@ export default function Cart() {
     }
 
     return (
-        <FlatList 
-            data={cart?.items ?? []}
-            keyExtractor={(item) => item.product._id}
-            renderItem={({item}) => (
-                <View>
-                <Image source={{ uri: item.product.image }} style={{ width: 100, height: 100 }} />
-                <Text>{item.product.name}</Text>
-                <Text>{item.quantity} x ${item.product.price}</Text>
-                <Button title="Remove" onPress={() => handleRemove(item.product._id)} />
-              </View>
-            )}
-        />
+        <View>
+                <FlatList 
+                    data={cart?.items ?? []}
+                    keyExtractor={(item) => item.product._id}
+                    renderItem={({item}) => (
+                        <View>
+                            <Image source={{ uri: item.product.image }} style={{ width: 100, height: 100 }} />
+                            <Text>{item.product.name}</Text>
+                            <Text>{item.quamtity} x ${item.product.price}</Text>
+                            <Button title="Remove" onPress={() => handleRemove(item.product._id)} />
+                        </View>
+                    )}
+                />
+
+                <Button title='Checkout' onPress={() => router.push('../(tabs-customer)/checkout')}/>
+        </View>
     );
 }
