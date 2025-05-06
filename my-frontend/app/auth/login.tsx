@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { View, TextInput, Button, Text } from "react-native";
+import { View, TextInput, Button, Text, StyleSheet ,useColorScheme, Alert } from "react-native";
 import { login } from "@/services/authService";
 import { router } from "expo-router";
+import { Colors } from "@/constants/Colors"; // Import your color constants
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const colorScheme = useColorScheme(); // Get the current color scheme (light or dark)
+    const colors = colorScheme === "dark" ? Colors.dark : Colors.light; // Use the appropriate colors based on the scheme
 
     const handleLogin = async () => {
         try{
@@ -24,21 +27,34 @@ export default function Login() {
     }
 
     return (
-        <View style={{ padding: 20 }}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             <TextInput
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
-                style={{ borderWidth: 1, marginBottom: 10, padding: 10 }}
+                placeholderTextColor={colors.text}
+                style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
             />
             <TextInput
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
-                style={{ borderWidth: 1, marginBottom: 10, padding: 10 }}
+                placeholderTextColor={colors.text}
+                style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
             />
-            <Button title="Login" onPress={handleLogin} />
+            <Button title="Login" onPress={handleLogin} color={colors.primary}/>
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: { flex: 1, justifyContent: "center", padding: 20 },
+    input: {
+      borderWidth: 1,
+      borderRadius: 6,
+      marginBottom: 15,
+      padding: 12,
+      fontSize: 16,
+    },
+  });
