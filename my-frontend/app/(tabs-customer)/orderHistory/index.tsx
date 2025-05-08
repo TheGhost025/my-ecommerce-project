@@ -1,11 +1,14 @@
-import {View, Text, FlatList, StyleSheet} from 'react-native';
+import {View, Text, FlatList, StyleSheet, useColorScheme} from 'react-native';
 import {useState, useEffect} from 'react';
 import {getOrdersByCustomer} from '@/services/orderService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Orders } from '@/types/Orders';
+import { Colors } from '@/constants/Colors';
 
 export default function OrderHistory() {
     const [orders, setOrders] = useState<Orders[]>([]);
+    const colorScheme = useColorScheme();
+    const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -23,19 +26,19 @@ export default function OrderHistory() {
     }, []);
 
     return(
-        <View style={styles.container}>
-            <Text style={styles.heading}>Your Orders</Text>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+            <Text style={[styles.heading, {color: colors.text}]}>Your Orders</Text>
             <FlatList
             data={orders}
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
-                <View style={styles.orderCard}>
-                <Text style={styles.date}>{new Date(item.createdAt).toLocaleDateString()}</Text>
+                <View style={[styles.orderCard, { backgroundColor: colors.card , borderColor: colors.border }]}>
+                <Text style={[styles.date, {color: colors.text}]}>{new Date(item.createdAt).toLocaleDateString()}</Text>
                 {item.products.map((p: any, index: number) => (
                     <View key={index} style={styles.productRow}>
-                    <Text>{p.product.name}</Text>
-                    <Text>Qty: {p.quantity}</Text>
-                    <Text>Supplier: {p.product.supplier?.name || "N/A"}</Text>
+                        <Text style={{color: colors.text}}>{p.product.name}</Text>
+                        <Text style={{color: colors.text}}>Qty: {p.quantity}</Text>
+                        <Text style={{color: colors.text}}>Supplier: {p.product.supplier?.name || "N/A"}</Text>
                     </View>
                 ))}
                 </View>

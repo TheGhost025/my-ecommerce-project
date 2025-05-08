@@ -14,6 +14,7 @@ export const Colors = {
     primary: '#4CAF50',
     price: '#2E7D32',
     inputBorder: '#ccc',
+    border: '#ccc',
   },
   dark: {
     background: '#121212',
@@ -22,5 +23,6 @@ export const Colors = {
     primary: '#81C784',
     price: '#A5D6A7',
     inputBorder: '#333',
+    border: '#444',
   },
 };

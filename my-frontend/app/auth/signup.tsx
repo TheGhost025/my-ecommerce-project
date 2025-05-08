@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {View, TextInput, Button, Text, StyleSheet,useColorScheme, Alert} from 'react-native';
+import {View, TextInput, Button, Text, StyleSheet,useColorScheme, TouchableOpacity} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import {signup} from '@/services/authService';
 import {router} from 'expo-router';
@@ -55,6 +55,12 @@ export default function Signup() {
                 <Picker.Item label="Supplier" value="supplier" color={colors.text}/>
             </Picker>
             <Button title="Signup" onPress={handleSignup} color={colors.primary}/>
+
+            <TouchableOpacity onPress={() => router.push('../auth/login')}>
+                <Text style={[styles.signupText,{ color: colors.text }]}>
+                    Already have an account? Log in
+                </Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -68,4 +74,8 @@ const styles = StyleSheet.create({
       padding: 12,
       fontSize: 16,
     },
+    signupText: {
+        textAlign: "center",
+        marginTop: 15,
+    }
   });

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, TextInput, Button, Text, StyleSheet ,useColorScheme, Alert } from "react-native";
+import { View, TextInput, Button, Text, StyleSheet ,useColorScheme, TouchableOpacity } from "react-native";
 import { login } from "@/services/authService";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors"; // Import your color constants
@@ -44,6 +44,12 @@ export default function Login() {
                 style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
             />
             <Button title="Login" onPress={handleLogin} color={colors.primary}/>
+
+            <TouchableOpacity onPress={() => router.push('../auth/signup')}>
+                <Text style={[styles.signupText,{ color: colors.text }]}>
+                    Don't have an account? Sign up
+                </Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -57,4 +63,8 @@ const styles = StyleSheet.create({
       padding: 12,
       fontSize: 16,
     },
+    signupText: {
+        textAlign: "center",
+        marginTop: 15,
+    }
   });
