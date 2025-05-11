@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useLocalSearchParams } from 'expo-router';
 import { getProductById } from "@/services/productService";
 import { addToCart } from "@/services/cartService";
+import { addToWishlist } from "@/services/wishlistService";
 import { Product } from "@/types/Products";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
@@ -35,6 +36,15 @@ useEffect(() => {
         }
       };
 
+      const handleAddToWishlist = async () => {
+        const userId = await AsyncStorage.getItem('userId');
+        const userIdParse = JSON.parse(userId as string);
+        await addToWishlist({
+          userId: userIdParse,
+        productId: product?._id ?? ''});
+        console.log("Product added to wishlist");
+    }
+
     if(!product) {
         return <Text>Loading...</Text>;
     }
@@ -50,6 +60,7 @@ useEffect(() => {
             <Text style={[styles.meta, {color: colors.text}]}>Supplier: {product.supplier.name}</Text>
 
             <Button title="Add to Cart" onPress={handleAddToCart} color={colors.primary} />
+            <Button title="Add to Wishlist" onPress={handleAddToWishlist} color={colors.primary} />
         </View>
     );
 }
