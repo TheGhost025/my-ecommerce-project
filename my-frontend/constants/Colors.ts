@@ -8,21 +8,23 @@ const tintColorDark = '#fff';
 
 export const Colors = {
   light: {
-    background: '#F5F5F5',
-    card: '#FFFFFF',
-    text: '#222222',
-    primary: '#4CAF50',
+    background: '#ffffff',
+    card: '#f9f9f9',
+    text: '#333333',
+    primary: '#007AFF',
     price: '#2E7D32',
     inputBorder: '#ccc',
     border: '#ccc',
+    tabInactive: "#888888",
   },
   dark: {
     background: '#121212',
-    card: '#1E1E1E',
-    text: '#FFFFFF',
-    primary: '#81C784',
+    card: '#1e1e1e',
+    text: '#f5f5f5',
+    primary: '#0A84FF',
     price: '#A5D6A7',
     inputBorder: '#333',
     border: '#444',
+    tabInactive: "#aaaaaa",
   },
 };
