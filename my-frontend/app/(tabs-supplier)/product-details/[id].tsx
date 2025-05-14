@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet, useColorScheme } from "react-native";
+import { View, Text, Image, StyleSheet, useColorScheme, ScrollView, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
 import { useLocalSearchParams } from 'expo-router';
 import { getProductById } from "@/services/productService";
@@ -27,23 +27,74 @@ useEffect(() => {
     }
 
     return(
-        <View style={[styles.container,{ backgroundColor: colors.background}]}>
+        <ScrollView style={{ backgroundColor: colors.background }} contentContainerStyle={styles.scrollContent}>
             <Image source={{ uri: product.image }} style={styles.productImage} />
-            <Text style={[styles.productName, {color: colors.text}]}>{product.name}</Text>
-            <Text style={[styles.productPrice, {color: colors.price}]}>${product.price.toFixed(2)}</Text>
-            <Text style={[styles.productDescription, {color: colors.text}]}>{product.description}</Text>
-            <Text style={[styles.meta, {color: colors.text}]}>Category: {product.category}</Text>
-            <Text style={[styles.meta, {color: colors.text}]}>Stock: {product.stock}</Text>
-            <Text style={[styles.meta, {color: colors.text}]}>Supplier: {product.supplier.name}</Text>
-        </View>
+            <Text style={[styles.productName, { color: colors.text }]}>{product.name}</Text>
+            <Text style={[styles.productPrice, { color: colors.price }]}>${product.price.toFixed(2)}</Text>
+            <Text style={[styles.productDescription, { color: colors.text }]}>{product.description}</Text>
+            <View style={styles.metaContainer}>
+                <Text style={[styles.meta, { color: colors.text }]}>Category: {product.category}</Text>
+                <Text style={[styles.meta, { color: colors.text }]}>Stock: {product.stock}</Text>
+                <Text style={[styles.meta, { color: colors.text }]}>Supplier: {product.supplier.name}</Text>
+            </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {flex: 1, padding: 20},
-    productImage: {width: '100%', height: 200, borderRadius: 10, marginBottom: 20},
-    productName: {fontSize: 24, fontWeight: 'bold'},
-    productPrice: {fontSize: 20, marginVertical: 10},
-    productDescription: {fontSize: 16, marginTop: 10},
-    meta: { fontSize: 14, marginTop: 5 },
+    scrollContent: {
+        padding: 20,
+        alignItems: 'center',
+    },
+    productImage: {
+        width: '100%',
+        height: 250,
+        borderRadius: 16,
+        marginBottom: 20,
+        resizeMode: 'cover',
+    },
+    productName: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    productPrice: {
+        fontSize: 22,
+        marginVertical: 10,
+        fontWeight: '600',
+    },
+    productDescription: {
+        fontSize: 16,
+        textAlign: 'justify',
+        marginTop: 10,
+    },
+    metaContainer: {
+        marginTop: 15,
+        width: '100%',
+    },
+    meta: {
+        fontSize: 14,
+        marginVertical: 2,
+    },
+    button: {
+        marginTop: 20,
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        width: '100%',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    wishlistButton: {
+        backgroundColor: '#FF6F61', // a warm color to differentiate
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
 });
