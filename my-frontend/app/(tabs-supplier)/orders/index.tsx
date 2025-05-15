@@ -27,31 +27,74 @@ export default function SupplierOrders() {
     }, []);
 
     return(
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <Text style={[styles.heading, {color: colors.text}]}>Supplier Orders</Text>
-        <FlatList
-          data={orders}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <View style={[styles.orderCard, { backgroundColor: colors.card , borderColor: colors.border }]}>
-              <Text style={[styles.customer, {color: colors.text}]}>Customer: {item.customer.name}</Text>
-              {item.products.map((p: any, index: number) => (
-                <View key={index} style={styles.productRow}>
-                  <Text style={{color: colors.text}}>{p.product.name}</Text>
-                  <Text style={{color: colors.text}}>Qty: {p.quantity}</Text>
-                </View>
-              ))}
-            </View>
-          )}
-        />
-      </View>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.heading, { color: colors.primary }]}>Supplier Orders</Text>
+      <FlatList
+        data={orders}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => (
+          <View style={[styles.orderCard, { backgroundColor: colors.card, borderColor: colors.inputBorder }]}>
+            <Text style={[styles.customer, { color: colors.text }]}>Customer: {item.customer.name}</Text>
+            <Text style={[styles.date, { color: colors.inputPlaceholder }]}>
+              Ordered on {new Date(item.createdAt).toLocaleDateString()}
+            </Text>
+            {item.products.map((p: any, index: number) => (
+              <View key={index} style={styles.productRow}>
+                <Text style={[styles.productName, { color: colors.text }]}>{p.product.name}</Text>
+                <Text style={[styles.productQty, { color: colors.primary }]}>Qty: {p.quantity}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      />
+    </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20 },
-    heading: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
-    orderCard: { borderWidth: 1, borderColor: "#ccc", padding: 10, borderRadius: 8, marginBottom: 10 },
-    customer: { fontWeight: "600", marginBottom: 5 },
-    productRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 4 }
-  });
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 30,
+  },
+  heading: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  orderCard: {
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  customer: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 6,
+  },
+  date: {
+    fontSize: 12,
+    marginBottom: 10,
+  },
+  productRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
+    borderBottomWidth: 0.5,
+    borderColor: '#ccc',
+  },
+  productName: {
+    fontSize: 14,
+  },
+  productQty: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+});

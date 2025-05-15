@@ -27,26 +27,53 @@ export default function Profile() {
     }, []);
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
-            <Text style={[styles.title, {color: colors.text}]}>Profile</Text>
-            <Text style={[styles.info, {color: colors.text}]}>Name: {name}</Text>
-            <Text style={[styles.info, {color: colors.text}]}>Email: {email}</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={styles.avatarContainer}>
+        <View style={[styles.avatar, { backgroundColor: colors.card }]}>
+          <Text style={[styles.avatarInitial, { color: colors.primary }]}>
+            {name ? name[0].toUpperCase() : "U"}
+          </Text>
         </View>
+        <Text style={[styles.name, { color: colors.text }]}>{name}</Text>
+        <Text style={[styles.email, { color: colors.inputPlaceholder }]}>{email}</Text>
+      </View>
+    </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    info: {
-        fontSize: 18,
-        marginBottom: 10,
-    }
+  container: {
+    flex: 1,
+    padding: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  avatarInitial: {
+    fontSize: 36,
+    fontWeight: 'bold',
+  },
+  name: {
+    fontSize: 22,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  email: {
+    fontSize: 16,
+  },
 });

@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Button, StyleSheet, useColorScheme, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, useColorScheme, Alert, ScrollView } from "react-native";
 import { useState } from "react";
 import { createProduct } from "@/services/productService";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -38,29 +38,102 @@ export default function AddProduct() {
     }
 
     return(
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
-            <Text style={[styles.title, {color: colors.primary}]}>Add New Product</Text>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.primary }]}>🛒 Add New Product</Text>
 
-            <TextInput placeholder="Name" value={name} onChangeText={setName} style={[styles.input,{ borderColor: colors.inputBorder, color: colors.text }]} />
-            <TextInput placeholder="Price" value={price} onChangeText={setPrice} keyboardType="numeric" style={[styles.input,{ borderColor: colors.inputBorder, color: colors.text }]} />
-            <TextInput placeholder="Description" value={description} onChangeText={setDescription} style={[styles.input,{ borderColor: colors.inputBorder, color: colors.text }]} />
-            <TextInput placeholder="Image URL" value={image} onChangeText={setImage} style={[styles.input,{ borderColor: colors.inputBorder, color: colors.text }]} />
-            <TextInput placeholder="Stock" value={stock} onChangeText={setStock} keyboardType="numeric" style={[styles.input,{ borderColor: colors.inputBorder, color: colors.text }]} />
-            <TextInput placeholder="Category" value={category} onChangeText={setCategory} style={[styles.input,{ borderColor: colors.inputBorder, color: colors.text }]} />
+      <View style={[styles.card, { backgroundColor: colors.card, shadowColor: colors.text }]}>
+        <TextInput
+          placeholder="Name"
+          placeholderTextColor={colors.inputPlaceholder}
+          value={name}
+          onChangeText={setName}
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+        />
+        <TextInput
+          placeholder="Price"
+          placeholderTextColor={colors.inputPlaceholder}
+          value={price}
+          onChangeText={setPrice}
+          keyboardType="numeric"
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+        />
+        <TextInput
+          placeholder="Description"
+          placeholderTextColor={colors.inputPlaceholder}
+          value={description}
+          onChangeText={setDescription}
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+        />
+        <TextInput
+          placeholder="Image URL"
+          placeholderTextColor={colors.inputPlaceholder}
+          value={image}
+          onChangeText={setImage}
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+        />
+        <TextInput
+          placeholder="Stock"
+          placeholderTextColor={colors.inputPlaceholder}
+          value={stock}
+          onChangeText={setStock}
+          keyboardType="numeric"
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+        />
+        <TextInput
+          placeholder="Category"
+          placeholderTextColor={colors.inputPlaceholder}
+          value={category}
+          onChangeText={setCategory}
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+        />
 
-            <Button title="Add Product" onPress={handleAddProduct} color={colors.primary} />
-        </View>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: colors.primary }]}
+          onPress={handleAddProduct}
+        >
+          <Text style={styles.buttonText}>➕ Add Product</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, justifyContent: "center", padding: 20 },
-    title: {fontSize: 24, fontWeight: 'bold', marginBottom: 20},
-    input: {
-        borderWidth: 1,
-        borderRadius: 6,
-        marginBottom: 15,
-        padding: 12,
-        fontSize: 16,
-      },
+  container: {
+    flexGrow: 1,
+    padding: 20,
+    justifyContent: "center",
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  card: {
+    borderRadius: 12,
+    padding: 20,
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 5,
+  },
+  input: {
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 15,
+    fontSize: 16,
+  },
+  button: {
+    marginTop: 10,
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
+  },
 });

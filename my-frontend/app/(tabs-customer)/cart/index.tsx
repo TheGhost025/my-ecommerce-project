@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import {Text, View, Button, FlatList, Image, StyleSheet,useColorScheme} from 'react-native';
+import { Text, View, FlatList, Image, StyleSheet, TouchableOpacity, useColorScheme } from 'react-native';
 import {getCart, removeFromCart} from '@/services/cartService';
 import {CartData} from '@/types/Cart';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -31,49 +31,111 @@ export default function Cart() {
         fetchCart(); // Refresh the cart after removing an item
     }
 
+    const calculateTotal = () => {
+      return cart?.items.reduce((total, item) => total + item.product.price * item.quamtity, 0) ?? 0;
+  };
+
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
-          <FlatList
-            data={cart?.items ?? []}
-            keyExtractor={(item) => item.product._id}
-            renderItem={({ item }) => (
-              <View style={[styles.itemContainer, { backgroundColor: colors.card }]}>
-                <Image source={{ uri: item.product.image }} style={styles.itemImage} />
-                <Text style={[styles.itemName, {color: colors.text}]}>{item.product.name}</Text>
-                <Text style={[styles.itemPrice , {color: colors.price}]}>
-                  {item.quamtity} x ${item.product.price}
-                </Text>
-                <Button title="Remove" onPress={() => handleRemove(item.product._id)} color={'red'}/>
-              </View>
-            )}
-          />
-          <Button title="Checkout" onPress={() => router.push('../(tabs-customer)/checkout')} color={colors.primary} />
-        </View>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <FlatList
+        data={cart?.items ?? []}
+        keyExtractor={(item) => item.product._id}
+        contentContainerStyle={{ paddingBottom: 20 }}
+        renderItem={({ item }) => (
+          <View style={[styles.card, { backgroundColor: colors.card, shadowColor: colors.text }]}>
+            <Image source={{ uri: item.product.image }} style={styles.image} />
+            <View style={styles.infoContainer}>
+              <Text style={[styles.name, { color: colors.text }]}>{item.product.name}</Text>
+              <Text style={[styles.price, { color: colors.price }]}>
+                {item.quamtity} × ${item.product.price.toFixed(2)}
+              </Text>
+              <TouchableOpacity onPress={() => handleRemove(item.product._id)} style={styles.removeButton}>
+                <Text style={styles.removeButtonText}>Remove</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      />
+
+      <View style={styles.footer}>
+        <Text style={[styles.totalText, { color: colors.text }]}>Total: ${calculateTotal().toFixed(2)}</Text>
+        <TouchableOpacity
+          style={[styles.checkoutButton, { backgroundColor: colors.primary }]}
+          onPress={() => router.push('../(tabs-customer)/checkout')}
+        >
+          <Text style={styles.checkoutText}>Checkout</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
       );
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 20,
-    },
-    itemContainer: {
-      padding: 15,
-      marginBottom: 10,
-      borderRadius: 10,
-    },
-    itemImage: {
-      width: 100,
-      height: 100,
-      borderRadius: 8,
-      marginBottom: 10,
-    },
-    itemName: {
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-    itemPrice: {
-      fontSize: 14,
-      marginBottom: 10,
-    },
-  });
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  card: {
+    flexDirection: 'row',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  image: {
+    width: 90,
+    height: 90,
+    borderRadius: 10,
+    marginRight: 16,
+  },
+  infoContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 6,
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 8,
+  },
+  removeButton: {
+    backgroundColor: '#ff4444',
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+  },
+  removeButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  footer: {
+    borderTopWidth: 1,
+    borderColor: '#ccc',
+    paddingTop: 12,
+    marginTop: 10,
+  },
+  totalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    textAlign: 'right',
+  },
+  checkoutButton: {
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  checkoutText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});

@@ -26,32 +26,58 @@ export default function OrderHistory() {
     }, []);
 
     return(
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
-            <Text style={[styles.heading, {color: colors.text}]}>Your Orders</Text>
-            <FlatList
-            data={orders}
-            keyExtractor={(item) => item._id}
-            renderItem={({ item }) => (
-                <View style={[styles.orderCard, { backgroundColor: colors.card , borderColor: colors.border }]}>
-                <Text style={[styles.date, {color: colors.text}]}>{new Date(item.createdAt).toLocaleDateString()}</Text>
-                {item.products.map((p: any, index: number) => (
-                    <View key={index} style={styles.productRow}>
-                        <Text style={{color: colors.text}}>{p.product.name}</Text>
-                        <Text style={{color: colors.text}}>Qty: {p.quantity}</Text>
-                        <Text style={{color: colors.text}}>Supplier: {p.product.supplier?.name || "N/A"}</Text>
-                    </View>
-                ))}
-                </View>
-            )}
-            />
-      </View>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.heading, { color: colors.text }]}>🛒 Your Orders</Text>
+      <FlatList
+        data={orders}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => (
+          <View style={[styles.orderCard, { backgroundColor: colors.card, borderColor: colors.border, shadowColor: colors.text }]}>
+            <Text style={[styles.date, { color: colors.text }]}>
+              📅 {new Date(item.createdAt).toLocaleDateString()}
+            </Text>
+            {item.products.map((p: any, index: number) => (
+              <View key={index} style={styles.productRow}>
+                <Text style={[styles.productName, { color: colors.text }]}>🛍️ {p.product.name}</Text>
+                <Text style={{ color: colors.text }}>Qty: {p.quantity}</Text>
+                <Text style={{ color: colors.text }}>🏷️ Supplier: {p.product.supplier?.name || "N/A"}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+        ListEmptyComponent={
+          <Text style={{ color: colors.text, textAlign: 'center', marginTop: 50 }}>
+            You haven’t placed any orders yet.
+          </Text>
+        }
+      />
+    </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20 },
-    heading: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
-    orderCard: { borderWidth: 1, borderColor: "#ccc", padding: 10, borderRadius: 8, marginBottom: 10 },
-    date: { fontWeight: "600", marginBottom: 5 },
-    productRow: { marginBottom: 5 }
-  });
+  container: { flex: 1, padding: 20 },
+  heading: { fontSize: 28, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
+  orderCard: {
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  date: { fontWeight: '600', fontSize: 16, marginBottom: 12 },
+  productRow: {
+    marginBottom: 10,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#f2f2f2',
+  },
+  productName: {
+    fontWeight: '600',
+    fontSize: 16,
+    marginBottom: 4,
+  },
+});
