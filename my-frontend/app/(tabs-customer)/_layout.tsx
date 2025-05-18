@@ -113,14 +113,13 @@ export default function CustomerTabs() {
       <Tabs.Screen
         name="product-details/[id]"
         options={{
-          tabBarButton: () => null,
+          href: null,
         }}
       />
         <Tabs.Screen
         name="checkout/index"
         options={{
-          tabBarButton: () => null,
-          
+          href: null,
         }}
       />
     </Tabs>

@@ -52,3 +52,22 @@ export const searchProducts = async (query: string): Promise<Product[]> => {
     });
     return response.data;
   };
+
+  export const updateProduct = async (id: string, product: Productt): Promise<Product> => {
+    try {
+        const response = await axios.put<Product>(`${API_URL}/${id}`, product);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating product:", error);
+        throw error;
+    }
+};
+
+export const deleteProduct = async (id: string): Promise<void> => {
+    try {
+        await axios.delete(`${API_URL}/${id}`);
+    } catch (error) {
+        console.error("Error deleting product:", error);
+        throw error;
+    }
+}

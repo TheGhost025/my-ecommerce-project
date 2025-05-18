@@ -1,4 +1,5 @@
 const Product = require('../models/productModel');
+const Order = require('../models/Order');
 
 exports.createProduct = async (req, res, next) => {
   try {
@@ -33,7 +34,19 @@ exports.getProducts = async (req, res, next) => {
 exports.getSupplierProducts = async (req, res, next) => {
   try {
     const products = await Product.find({ supplier: req.params.supplierId }).populate('supplier', 'name');
-    res.status(200).json(products);
+
+    // Add order count for each product
+    const productsWithOrderCount = await Promise.all(
+      products.map(async (product) => {
+        const orderCount = await Order.countDocuments({ 'products.product': product._id });
+        return {
+          ...product.toObject(),
+          orderCount,
+        };
+      })
+    );
+
+    res.status(200).json(productsWithOrderCount);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching products', error });
   }
@@ -70,5 +83,33 @@ exports.searchProducts = async (req, res, next) => {
   } catch (error) {
     console.error("Error in searchProducts:", error);
     res.status(500).json({ message: 'Error searching products', error });
+  }
+};
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+    res.json({ message: 'Product deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', err });
+  }
+};
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const { name, description, price, image, category, stock, supplier } = req.body;
+
+    const updated = await Product.findByIdAndUpdate(
+      req.params.id,
+      { name, description, price, image, category, stock, supplier },
+      { new: true }
+    );
+
+    if (!updated) return res.status(404).json({ message: 'Product not found' });
+
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update product', err });
   }
 };

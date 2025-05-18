@@ -97,8 +97,14 @@ export default function SupplierTabs() {
         <Tabs.Screen
         name="product-details/[id]"
         options={{
-          tabBarButton: () => null,
+          href: null,
         }}
+      />
+      <Tabs.Screen 
+      name="edit-product/[id]"
+      options={{
+        href: null,
+      }}
       />
     </Tabs>
   );

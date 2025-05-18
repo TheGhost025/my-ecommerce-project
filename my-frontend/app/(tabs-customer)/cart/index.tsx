@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 import { Text, View, FlatList, Image, StyleSheet, TouchableOpacity, useColorScheme } from 'react-native';
-import {getCart, removeFromCart} from '@/services/cartService';
+import {getCart, removeFromCart, updateCartQuantity} from '@/services/cartService';
 import {CartData} from '@/types/Cart';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
@@ -31,6 +31,16 @@ export default function Cart() {
         fetchCart(); // Refresh the cart after removing an item
     }
 
+    const handleQuantityChange = async (productId: string, newQuantity: number) => {
+      if (newQuantity <= 0) return; // optionally call handleRemove()
+
+      const userId = await AsyncStorage.getItem('userId');
+      const userIdParsed = JSON.parse(userId as string);
+      await updateCartQuantity(userIdParsed, productId, newQuantity);
+      fetchCart(); // refresh cart
+    };
+
+
     const calculateTotal = () => {
       return cart?.items.reduce((total, item) => total + item.product.price * item.quamtity, 0) ?? 0;
   };
@@ -49,6 +59,17 @@ export default function Cart() {
               <Text style={[styles.price, { color: colors.price }]}>
                 {item.quamtity} × ${item.product.price.toFixed(2)}
               </Text>
+              
+              <View style={styles.quantityContainer}>
+                <TouchableOpacity onPress={() => handleQuantityChange(item.product._id, item.quamtity - 1)} style={styles.quantityButton}>
+                  <Text style={styles.quantityButtonText}>−</Text>
+                </TouchableOpacity>
+                <Text style={[styles.quantityText, { color: colors.text }]}>{item.quamtity}</Text>
+                <TouchableOpacity onPress={() => handleQuantityChange(item.product._id, item.quamtity + 1)} style={styles.quantityButton}>
+                  <Text style={styles.quantityButtonText}>+</Text>
+                </TouchableOpacity>
+              </View>
+
               <TouchableOpacity onPress={() => handleRemove(item.product._id)} style={styles.removeButton}>
                 <Text style={styles.removeButtonText}>Remove</Text>
               </TouchableOpacity>
@@ -137,5 +158,25 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  quantityContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginTop: 8,
+  },
+  quantityButton: {
+    backgroundColor: '#ccc',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginHorizontal: 6,
+  },
+  quantityButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  quantityText: {
+    fontSize: 16,
+    fontWeight: '500',
   },
 });

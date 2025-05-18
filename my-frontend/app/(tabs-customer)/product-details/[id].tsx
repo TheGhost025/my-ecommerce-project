@@ -11,6 +11,7 @@ import { Colors } from "@/constants/Colors";
 export default function ProductDetails() {
     const { id } = useLocalSearchParams();
     const [product, setProduct] = useState<Product | null>(null);
+    const [quantity, setQuantity] = useState<number>(1);
     const colorScheme = useColorScheme();
     const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
 
@@ -30,7 +31,7 @@ useEffect(() => {
         const userIdParse = JSON.parse(userId as string);
         try {
           if (!userIdParse || !product) return;
-          await addToCart(userIdParse, product._id, 1);
+          await addToCart(userIdParse, product._id, quantity);
         } catch (error) {
           console.error("Add to cart failed", error);
         }
@@ -59,6 +60,15 @@ useEffect(() => {
                 <Text style={[styles.meta, { color: colors.text }]}>Category: {product.category}</Text>
                 <Text style={[styles.meta, { color: colors.text }]}>Stock: {product.stock}</Text>
                 <Text style={[styles.meta, { color: colors.text }]}>Supplier: {product.supplier.name}</Text>
+            </View>
+            <View style={styles.quantityContainer}>
+                <TouchableOpacity onPress={() => setQuantity(prev => Math.max(1, prev - 1))} style={styles.quantityButton}>
+                    <Text style={styles.quantityButtonText}>-</Text>
+                </TouchableOpacity>
+                <Text style={styles.quantityValue}>{quantity}</Text>
+                <TouchableOpacity onPress={() => setQuantity(prev => prev + 1)} style={styles.quantityButton}>
+                    <Text style={styles.quantityButtonText}>+</Text>
+                </TouchableOpacity>
             </View>
 
             <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={handleAddToCart}>
@@ -128,4 +138,25 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
     },
+    quantityContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+        marginBottom: 10,
+        },
+        quantityButton: {
+        backgroundColor: '#ccc',
+        padding: 10,
+        borderRadius: 5,
+        marginHorizontal: 10,
+        },
+        quantityButtonText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        },
+        quantityValue: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        },
 });
