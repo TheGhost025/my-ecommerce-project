@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet, useColorScheme, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, Image, StyleSheet, useColorScheme, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useState, useEffect } from "react";
 import { useLocalSearchParams } from 'expo-router';
 import { getProductById } from "@/services/productService";
@@ -47,7 +47,11 @@ useEffect(() => {
     }
 
     if(!product) {
-        return <Text>Loading...</Text>;
+        return (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={colors.primary} />
+            </View>
+        );
     }
 
     return(
@@ -158,5 +162,10 @@ const styles = StyleSheet.create({
         quantityValue: {
         fontSize: 18,
         fontWeight: 'bold',
+        },
+        loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
         },
 });

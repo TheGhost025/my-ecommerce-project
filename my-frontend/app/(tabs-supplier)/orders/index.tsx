@@ -1,4 +1,4 @@
-import {View, Text, FlatList, StyleSheet, useColorScheme} from 'react-native';
+import {View, Text, FlatList, StyleSheet, useColorScheme, ActivityIndicator} from 'react-native';
 import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import { getOrdersBySupplier } from '@/services/orderService';
@@ -8,11 +8,13 @@ import { Colors } from '@/constants/Colors';
 
 export default function SupplierOrders() {
     const [orders, setOrders] = useState<Orders[]>([]);
+    const [loading, setLoading] = useState(false);
     const colorScheme = useColorScheme();
     const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
 
     useEffect(() => {
         const fetchOrders = async () => {
+            setLoading(true);
             const userId = await AsyncStorage.getItem('userId');
             const userIdParsed = JSON.parse(userId as string);
             try{
@@ -22,6 +24,9 @@ export default function SupplierOrders() {
             catch (error) {
                 console.error("Error fetching orders:", error);
             }
+            finally {
+                setLoading(false);
+            }
         };
         fetchOrders();
     }, []);
@@ -29,6 +34,11 @@ export default function SupplierOrders() {
     return(
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Text style={[styles.heading, { color: colors.primary }]}>Supplier Orders</Text>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          </View> ):
+          ( <>
       <FlatList
         data={orders}
         keyExtractor={(item) => item._id}
@@ -47,7 +57,7 @@ export default function SupplierOrders() {
           </View>
         )}
         contentContainerStyle={{ paddingBottom: 20 }}
-      />
+      /> </>)}
     </View>
     );
 }
@@ -97,4 +107,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
+    loadingContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
 });

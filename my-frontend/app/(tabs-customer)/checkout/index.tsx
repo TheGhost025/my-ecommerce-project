@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import { Text, View, FlatList, Image, StyleSheet, Alert, useColorScheme, TouchableOpacity, ActivityIndicator,} from 'react-native';
+import { Text, View, FlatList, Image, StyleSheet, Alert, useColorScheme, TouchableOpacity, ActivityIndicator, Platform,} from 'react-native';
 import {getCart} from '@/services/cartService';
 import { createOrder } from '@/services/orderService';
 import { CartData } from '@/types/Cart';
@@ -24,21 +24,60 @@ export default function Checkout(){
 
     const getTotal = () => cart?.items.reduce((total, item) => total + item.product.price * item.quamtity, 0) || 0;
 
-    const handleCheckout = async () => {
-        setLoading(true);
-        try {
-            const userId = await AsyncStorage.getItem("userId");
-            const userIdParsed = JSON.parse(userId as string);
-            const orderData = { customer: userIdParsed };
-            const order = await createOrder(orderData);
-            Alert.alert("Success", `Order ${order._id} created successfully!`);
-        } catch (error) {
-            console.error("Error creating order:", error);
-            Alert.alert("Error", "Failed to create order. Please try again.");
-        } finally {
-            setLoading(false);
-        }
-    };
+const handleCheckout = async () => {
+  const confirmCheckout = () => {
+    Alert.alert(
+      "Confirm Checkout",
+      "Are you sure you want to place this order?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Yes",
+          style: "default",
+          onPress: async () => {
+            await placeOrder();
+          },
+        },
+      ]
+    );
+  };
+
+  if (Platform.OS === "web") {
+    const confirmed = window.confirm("Are you sure you want to place this order?");
+    if (confirmed) {
+      await placeOrder();
+    }
+  } else {
+    confirmCheckout();
+  }
+};
+
+const placeOrder = async () => {
+  setLoading(true);
+  try {
+    const userId = await AsyncStorage.getItem("userId");
+    const userIdParsed = JSON.parse(userId as string);
+    const orderData = { customer: userIdParsed };
+    const order = await createOrder(orderData);
+
+    if (Platform.OS === "web") {
+      alert(`Order ${order._id} created successfully!`);
+    } else {
+      Alert.alert("Success", `Order ${order._id} created successfully!`);
+    }
+
+    // Optionally redirect or clear cart
+  } catch (error) {
+    console.error("Error creating order:", error);
+    if (Platform.OS === "web") {
+      alert("Failed to create order. Please try again.");
+    } else {
+      Alert.alert("Error", "Failed to create order. Please try again.");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
       
       return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -69,7 +108,9 @@ export default function Checkout(){
           disabled={loading || cart?.items.length === 0}
         >
           {loading ? (
-            <ActivityIndicator color="#fff" />
+                  <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color={colors.primary} />
+                  </View>
           ) : (
             <Text style={styles.buttonText}>Place Order</Text>
           )}
@@ -140,4 +181,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  loadingContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
 });

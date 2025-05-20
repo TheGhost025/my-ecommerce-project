@@ -1,4 +1,4 @@
-import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, useColorScheme, Alert } from 'react-native';
+import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, useColorScheme, Alert, Platform } from 'react-native';
 import { useEffect, useState } from 'react';
 import { getProductsBySupplier, deleteProduct } from '@/services/productService';
 import { Product } from '@/types/Products';
@@ -22,19 +22,47 @@ export default function Dashboard() {
     fetchProducts();
   }, []);
 
-    const confirmDelete = (productId: string) => {
-    Alert.alert("Delete Product", "Are you sure you want to delete this product?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: async () => {
-          await deleteProduct(productId);
-          setProducts((prev) => prev.filter((p) => p._id !== productId));
+const confirmDelete = (productId: string) => {
+  if (Platform.OS === "web") {
+    const confirmed = window.confirm("Are you sure you want to delete this product?");
+    if (confirmed) {
+      proceedDelete(productId);
+    }
+  } else {
+    Alert.alert(
+      "Delete Product",
+      "Are you sure you want to delete this product?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => proceedDelete(productId),
         },
-      },
-    ]);
-  };
+      ]
+    );
+  }
+};
+
+const proceedDelete = async (productId: string) => {
+  try {
+    await deleteProduct(productId);
+    setProducts((prev) => prev.filter((p) => p._id !== productId));
+
+    if (Platform.OS === "web") {
+      alert("Product deleted successfully.");
+    } else {
+      Alert.alert("Success", "Product deleted successfully.");
+    }
+  } catch (error) {
+    console.error("Failed to delete product:", error);
+    if (Platform.OS === "web") {
+      alert("Failed to delete product.");
+    } else {
+      Alert.alert("Error", "Failed to delete product.");
+    }
+  }
+};
 
   const renderItem = ({ item }: { item: Product }) => (
     <TouchableOpacity

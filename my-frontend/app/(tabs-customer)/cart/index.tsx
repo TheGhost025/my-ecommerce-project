@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import { Text, View, FlatList, Image, StyleSheet, TouchableOpacity, useColorScheme } from 'react-native';
+import { Text, View, FlatList, Image, StyleSheet, TouchableOpacity, useColorScheme, ActivityIndicator, Platform, Alert } from 'react-native';
 import {getCart, removeFromCart, updateCartQuantity} from '@/services/cartService';
 import {CartData} from '@/types/Cart';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,6 +8,7 @@ import { Colors } from '@/constants/Colors';
 
 export default function Cart() {
     const [cart, setCart] = useState<CartData | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
     const colorScheme = useColorScheme();
     const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
 
@@ -17,19 +18,56 @@ export default function Cart() {
     }, []);
 
     const fetchCart = async () => {
+      try{
+        setLoading(true);
         const userId = await AsyncStorage.getItem('userId');
         const userIdParse = JSON.parse(userId as string);
         const data = await getCart(userIdParse);
         console.log('Cart data:', data);
         setCart(data);
+      } catch (error) {
+        console.error("Error fetching cart:", error);
+      }finally {
+        setLoading(false);
+      }
     };
 
-    const handleRemove = async (productId: string) => {
-        const userId = await AsyncStorage.getItem('userId');
-        const userIdParse = JSON.parse(userId as string);
-        await removeFromCart(userIdParse, productId);
-        fetchCart(); // Refresh the cart after removing an item
+const handleRemove = async (productId: string) => {
+  const confirmDelete = () => {
+    Alert.alert(
+      'Remove Item',
+      'Are you sure you want to remove this item from your cart?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            const userId = await AsyncStorage.getItem('userId');
+            const userIdParse = JSON.parse(userId as string);
+            await removeFromCart(userIdParse, productId);
+            fetchCart();
+          },
+        },
+      ]
+    );
+  };
+
+  // Web fallback
+  if (Platform.OS === 'web') {
+    if (window.confirm('Are you sure you want to remove this item from your cart?')) {
+      const userId = await AsyncStorage.getItem('userId');
+      const userIdParse = JSON.parse(userId as string);
+      await removeFromCart(userIdParse, productId);
+      fetchCart();
     }
+  } else {
+    confirmDelete();
+  }
+};
 
     const handleQuantityChange = async (productId: string, newQuantity: number) => {
       if (newQuantity <= 0) return; // optionally call handleRemove()
@@ -47,7 +85,13 @@ export default function Cart() {
 
     return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <FlatList
+      {loading ? (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    ) : 
+      (<>
+        <FlatList
         data={cart?.items ?? []}
         keyExtractor={(item) => item.product._id}
         contentContainerStyle={{ paddingBottom: 20 }}
@@ -87,6 +131,8 @@ export default function Cart() {
           <Text style={styles.checkoutText}>Checkout</Text>
         </TouchableOpacity>
       </View>
+      </>
+    )}
     </View>
       );
 }
@@ -179,4 +225,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
+  loadingContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
 });

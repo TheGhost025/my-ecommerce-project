@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Alert, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, TextInput, Alert, StyleSheet, ScrollView, Pressable, ActivityIndicator, Platform } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { updateProduct, getProductById } from '@/services/productService';
@@ -44,27 +44,40 @@ export default function ProductDetails() {
     }));
   };
 
-  const handleUpdate = async () => {
-    try {
-      const updatePayload = {
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        image: product.image,
-        category: product.category,
-        stock: product.stock,
-        supplier: product.supplier._id,
-      };
+const handleUpdate = async () => {
+  try {
+    const updatePayload = {
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      image: product.image,
+      category: product.category,
+      stock: product.stock,
+      supplier: product.supplier._id,
+    };
 
-      await updateProduct(id, updatePayload);
+    await updateProduct(id, updatePayload);
+
+    if (Platform.OS === 'web') {
+      window.alert('Product updated successfully');
+    } else {
       Alert.alert('Success', 'Product updated');
-      router.back();
-    } catch (err) {
+    }
+
+    router.back(); // Navigate back
+  } catch (err) {
+    if (Platform.OS === 'web') {
+      window.alert('Failed to update product');
+    } else {
       Alert.alert('Error', 'Failed to update product');
     }
-  };
+  }
+};
 
-  if (loading) return <Text style={[styles.loading, { color: color.text }]}>Loading...</Text>;
+  if (loading) return (                  
+                  <View style={styles.loadingContainer}>
+                      <ActivityIndicator size="large" color={color.primary} />
+                  </View>);
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: color.background }]}>
@@ -131,4 +144,9 @@ const styles = StyleSheet.create({
     marginTop: 40,
     fontSize: 16,
   },
+  loadingContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
 });

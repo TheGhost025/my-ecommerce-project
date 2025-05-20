@@ -1,4 +1,4 @@
-import {View, Text, FlatList, StyleSheet, useColorScheme} from 'react-native';
+import {View, Text, FlatList, StyleSheet, useColorScheme, ActivityIndicator} from 'react-native';
 import {useState, useEffect} from 'react';
 import {getOrdersByCustomer} from '@/services/orderService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,11 +7,13 @@ import { Colors } from '@/constants/Colors';
 
 export default function OrderHistory() {
     const [orders, setOrders] = useState<Orders[]>([]);
+    const [loading, setLoading] = useState(false);
     const colorScheme = useColorScheme();
     const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
 
     useEffect(() => {
         const fetchOrders = async () => {
+            setLoading(true);
             const userId = await AsyncStorage.getItem('userId');
             const userIdParsed = JSON.parse(userId as string);
             try{
@@ -21,6 +23,9 @@ export default function OrderHistory() {
             catch (error) {
                 console.error("Error fetching orders:", error);
             }
+            finally {
+                setLoading(false);
+            }
         };
         fetchOrders();
     }, []);
@@ -28,6 +33,11 @@ export default function OrderHistory() {
     return(
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Text style={[styles.heading, { color: colors.text }]}>🛒 Your Orders</Text>
+      {loading ? (      
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={colors.primary} />
+            </View>) :
+      (<>
       <FlatList
         data={orders}
         keyExtractor={(item) => item._id}
@@ -51,6 +61,7 @@ export default function OrderHistory() {
           </Text>
         }
       />
+      </>)}
     </View>
     );
 }
@@ -80,4 +91,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 4,
   },
+    loadingContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
 });

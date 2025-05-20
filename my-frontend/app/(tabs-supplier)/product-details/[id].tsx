@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet, useColorScheme, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, Image, StyleSheet, useColorScheme, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useState, useEffect } from "react";
 import { useLocalSearchParams } from 'expo-router';
 import { getProductById } from "@/services/productService";
@@ -8,22 +8,30 @@ import { Colors } from "@/constants/Colors";
 export default function ProductDetails() {
     const { id } = useLocalSearchParams();
     const [product, setProduct] = useState<Product | null>(null);
+    const [loading, setLoading] = useState(true);   
     const colorScheme = useColorScheme();
     const colors = colorScheme === "dark" ? Colors.dark : Colors.light;
 
 useEffect(() => {
     const fetchProduct = async () => {
         try {
+            setLoading(true);
             const data = await getProductById(id as string);
             setProduct(data);
         } catch (error) {
             console.error("Error fetching product:", error);
         }
+        finally {
+            setLoading(false);
+        }
     };
     fetchProduct();}, [id]);
 
     if(!product) {
-        return <Text>Loading...</Text>;
+        return( 
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={colors.primary} />
+            </View>);
     }
 
     return(
@@ -97,4 +105,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
     },
+      loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        },
 });
