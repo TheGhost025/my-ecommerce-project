@@ -20,3 +20,8 @@ export const getWishlistByUser = async (userId: string): Promise<WishlistItem[]>
   const response = await axios.get<WishlistItem[]>(`${API_URL}/${userId}`);
   return response.data;
 };
+
+export const isWhishlisted = async (userId: string, productId: string): Promise<boolean> => {
+  const response = await axios.get(`${API_URL}/isWhishlist?userId=${userId}&productId=${productId}`);
+  return response.data;
+}

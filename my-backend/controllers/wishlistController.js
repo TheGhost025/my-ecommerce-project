@@ -44,3 +44,21 @@ exports.removeFromWishlist = async (req, res, next) => {
         res.status(500).json({ error: err.message});
     }
 }
+
+exports.isWhishlist = async (req, res, next) => { 
+    const { userId, productId } = req.query;
+
+    if (!userId || !productId) {
+        return res.status(400).json({ error: 'Missing userId or productId' });
+    }
+
+    try {
+        const wishlist = await Wishlist.findOne({ userId });
+
+        const isWishlisted = wishlist?.products.includes(productId);
+        res.json({ isWishlisted });
+    } catch (error) {
+        console.error('Error checking wishlist:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+ }

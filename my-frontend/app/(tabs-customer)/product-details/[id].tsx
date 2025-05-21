@@ -1,17 +1,19 @@
-import { View, Text, Image, StyleSheet, useColorScheme, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, Image, StyleSheet, useColorScheme, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Platform } from "react-native";
 import { useState, useEffect } from "react";
 import { useLocalSearchParams } from 'expo-router';
 import { getProductById } from "@/services/productService";
 import { addToCart } from "@/services/cartService";
-import { addToWishlist } from "@/services/wishlistService";
+import { addToWishlist ,removeFromWishlist, isWhishlisted} from "@/services/wishlistService";
 import { Product } from "@/types/Products";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function ProductDetails() {
     const { id } = useLocalSearchParams();
     const [product, setProduct] = useState<Product | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
+    const [isWishlisted, setIsWishlisted] = useState(false);
     const colorScheme = useColorScheme();
     const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
 
@@ -20,6 +22,14 @@ useEffect(() => {
         try {
             const data = await getProductById(id as string);
             setProduct(data);
+
+            const userId = await AsyncStorage.getItem('userId');
+            const userIdParse = JSON.parse(userId as string);
+            if (userIdParse) {
+                const wishlisted = await isWhishlisted(userIdParse, data._id);
+                setIsWishlisted(wishlisted);
+            }
+
         } catch (error) {
             console.error("Error fetching product:", error);
         }
@@ -37,14 +47,34 @@ useEffect(() => {
         }
       };
 
-      const handleAddToWishlist = async () => {
-        const userId = await AsyncStorage.getItem('userId');
-        const userIdParse = JSON.parse(userId as string);
-        await addToWishlist({
-          userId: userIdParse,
-        productId: product?._id ?? ''});
-        console.log("Product added to wishlist");
+const toggleWishlist = async () => {
+  try {
+    const userId = await AsyncStorage.getItem('userId');
+    const userIdParse = JSON.parse(userId as string);
+    if (!userIdParse || !product) return;
+
+    if (isWishlisted) {
+      await removeFromWishlist({ userId: userIdParse, productId: product._id });
+      setIsWishlisted(false);
+      Platform.OS === 'web'
+        ? window.alert("Product removed from wishlist")
+        : Alert.alert("Removed", "Product removed from wishlist");
+    } else {
+      await addToWishlist({ userId: userIdParse, productId: product._id });
+      setIsWishlisted(true);
+      Platform.OS === 'web'
+        ? window.alert("Product added to wishlist")
+        : Alert.alert("Success", "Product added to wishlist");
     }
+  } catch (error) {
+    console.error("Wishlist toggle failed", error);
+    const msg = isWishlisted ? "Failed to remove from wishlist" : "Failed to add to wishlist";
+    Platform.OS === 'web'
+      ? window.alert(msg)
+      : Alert.alert("Error", msg);
+  }
+};
+
 
     if(!product) {
         return (
@@ -79,8 +109,12 @@ useEffect(() => {
                 <Text style={styles.buttonText}>Add to Cart</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.button, styles.wishlistButton]} onPress={handleAddToWishlist}>
-                <Text style={styles.buttonText}>Add to Wishlist</Text>
+            <TouchableOpacity onPress={toggleWishlist} style={styles.heartIcon}>
+            <Ionicons
+                name={isWishlisted ? 'heart' : 'heart-outline'}
+                size={32}
+                color={isWishlisted ? 'red' : colors.text}
+            />
             </TouchableOpacity>
         </ScrollView>
     );
@@ -137,6 +171,12 @@ const styles = StyleSheet.create({
     wishlistButton: {
         backgroundColor: '#FF6F61', // a warm color to differentiate
     },
+    heartIcon: {
+        position: 'absolute',
+        top: 30,
+        right: 30,
+        zIndex: 10,
+        },
     buttonText: {
         color: 'white',
         fontWeight: 'bold',
